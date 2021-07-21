@@ -17,8 +17,8 @@ next X = O
 empty :: Grid
 empty = replicate size (replicate size B)
 
-full :: Grid -> Bool 
-full = all (/= B) . concat 
+full :: Grid -> Bool
+full = notElem B . concat
 
 turn :: Grid -> Player
 turn g = if os <= xs then O else B
@@ -27,7 +27,7 @@ turn g = if os <= xs then O else B
                ps = concat g
 
 
-wins :: Player -> Grid -> Bool 
+wins :: Player -> Grid -> Bool
 wins p g = any line (rows ++ cols ++ dias)
            where
                  line = all (== p)
@@ -38,13 +38,13 @@ wins p g = any line (rows ++ cols ++ dias)
 diag :: Grid -> [Player]
 diag g = [g !! n !! n | n <- [0..size-1]]
 
-won :: Grid -> Bool 
+won :: Grid -> Bool
 won g = wins O g || wins X g
 
 putGrid :: Grid -> IO ()
 putGrid =
       putStrLn . unlines . concat . interleave bar . map showRow
-      where bar = [replicate ((size * 4) - 1) '-']
+      where bar = [replicate (size * 4 - 1) '-']
 
 showRow :: [Player] -> [String]
 showRow = beside . interleave bar . map showPlayer
@@ -62,22 +62,22 @@ interleave x [] = []
 interleave x [y] = [y]
 interleave x (y:ys) = y : x : interleave x ys
 
-valid :: Grid -> Int -> Bool 
+valid :: Grid -> Int -> Bool
 valid g i = 0 <= i && i < size^2 && concat g !! i == B
 
 move :: Grid -> Int -> Player -> [Grid]
-move g i p = 
-      if valid g i then [chop size (xs ++ [p] ++ ys)] else []
-      where (xs, B:ys) = splitAt i (concat g) 
+move g i p =
+      [chop size (xs ++ [p] ++ ys) | valid g i]
+      where (xs, B:ys) = splitAt i (concat g)
 
 chop :: Int -> [a] -> [[a]]
 chop n [] = []
-chop n xs = take n xs : chop n (drop n xs) 
+chop n xs = take n xs : chop n (drop n xs)
 
-getNat :: String -> IO Int 
+getNat :: String -> IO Int
 getNat prompt = do putStr prompt
-                   xs <- getLine 
-                   if xs /= [] && all isDigit xs then 
+                   xs <- getLine
+                   if xs /= [] && all isDigit xs then
                          return  (read xs)
                    else
                          do putStrLn  "ERROR: Invalid number"
@@ -97,14 +97,14 @@ run' :: Grid -> Player -> IO ()
 run' g p | wins O g = putStrLn "Player O wins!\n"
          | wins X g = putStrLn "Player X wins!\n"
          | full g   = putStrLn "It's a draw!\n"
-         | otherwise = 
+         | otherwise =
                do i <- getNat (prompt p)
                   case move g i p of
                         [] -> do putStrLn "ERROR: Invalid move"
                                  run' g p
                         [g'] -> run g' (next p)
 
-prompt :: Player -> String 
+prompt :: Player -> String
 prompt p = "Player " ++ show p ++ ", enter your move:"
 
 cls :: IO ()
@@ -114,3 +114,23 @@ type Pos = (Int, Int)
 
 goto :: Pos -> IO ()
 goto (x, y) = putStr ("\ESC[" ++ show y ++ ";" ++ show x ++ "H")
+
+data Tree a = Node a [Tree a] deriving Show
+
+gametree :: Grid -> Player -> Tree Grid
+gametree g p = Node g [gametree g' (next p) | g' <- moves g p]
+
+moves :: Grid -> Player -> [Grid]
+moves g p
+      | won g = []
+      | full g = []
+      | otherwise = concat [move g i p | i <- [0..(size^2-1)]]
+
+-- ex11-1
+countBranch :: Tree a -> Int
+countBranch (Node n []) = 1
+countBranch (Node n (x:xs)) = countBranch x + countBranch (Node n xs)
+
+countDepth :: Tree a -> Int
+countDepth (Node n []) = 0
+countDepth (Node n (x:xs)) = max (countDepth x + 1) (countDepth (Node n xs))
