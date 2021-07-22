@@ -1,6 +1,7 @@
 import Data.Char
 import Data.List
 import System.IO
+import System.Random (randomRIO)
 
 size :: Int
 size = 3
@@ -146,11 +147,11 @@ minimax (Node g ts)
                             ts' = map minimax ts
                             ps = [p | Node (_, p) _ <- ts']
 
-bestmove :: Grid -> Player -> Grid
-bestmove g p = head [g' | Node (g', p') _ <- ts, p' == best]
-               where
-                     tree = prune depth (gametree g p)
-                     Node (_, best) ts = minimax tree
+bestmoves :: Grid -> Player -> [Grid]
+bestmoves g p = [g' | Node (g', p') _ <- ts, p' == best]
+                where
+                    tree = prune depth (gametree g p)
+                    Node (_, best) ts = minimax tree
 
 main :: IO ()
 main = do hSetBuffering stdout NoBuffering 
@@ -173,4 +174,6 @@ play' g p
                                    play' g p
                           [g'] -> play g' (next p)
       | p == X = do putStr "Player X is thinking..."
-                    (play $! (bestmove g p)) (next p)
+                    index <- randomRIO (0, (length bs)-1)
+                    (play $! bs !! index) (next p)
+                    where bs = bestmoves g p

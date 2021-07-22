@@ -126,51 +126,11 @@ moves g p
       | full g = []
       | otherwise = concat [move g i p | i <- [0..(size^2-1)]]
 
-prune :: Int -> Tree a -> Tree a
-prune 0 (Node x _) = Node x []
-prune n (Node x ts) = Node x [prune (n-1) t | t <- ts]
+-- ex11-1
+countBranch :: Tree a -> Int
+countBranch (Node n []) = 1
+countBranch (Node n (x:xs)) = countBranch x + countBranch (Node n xs)
 
-depth :: Int
-depth = 9
-
-
-minimax :: Tree Grid -> Tree (Grid, Player)
-minimax (Node g [])
-      | wins O g = Node (g, O) []
-      | wins X g = Node (g, X) []
-      | otherwise = Node (g, B) []
-minimax (Node g ts)
-      | turn g == O = Node (g, minimum ps) ts'
-      | turn g == X = Node (g, maximum ps) ts'
-                      where
-                            ts' = map minimax ts
-                            ps = [p | Node (_, p) _ <- ts']
-
-bestmove :: Grid -> Player -> Grid
-bestmove g p = head [g' | Node (g', p') _ <- ts, p' == best]
-               where
-                     tree = prune depth (gametree g p)
-                     Node (_, best) ts = minimax tree
-
-main :: IO ()
-main = do hSetBuffering stdout NoBuffering 
-          play empty O
-
-play :: Grid -> Player -> IO ()
-play g p = do cls
-              goto (1, 1)
-              putGrid g
-              play' g p
-
-play' :: Grid -> Player -> IO ()
-play' g p
-      | wins O g = putStrLn "Player O wins!\n"
-      | wins X g = putStrLn "Player X wins!\n"
-      | full g = putStrLn "It's a draw!\n"
-      | p == O = do i <- getNat (prompt p)
-                    case move g i p of
-                          [] -> do putStrLn "ERROR: Invalid move"
-                                   play' g p
-                          [g'] -> play g' (next p)
-      | p == X = do putStr "Player X is thinking..."
-                    (play $! (bestmove g p)) (next p)
+countDepth :: Tree a -> Int
+countDepth (Node n []) = 0
+countDepth (Node n (x:xs)) = max (countDepth x + 1) (countDepth (Node n xs))
