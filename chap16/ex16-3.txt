@@ -1,0 +1,9 @@
+all (== x) (replicate 0 x)
+all (== x) []
+True
+
+all (== x) (replicate (n + 1) x)
+all (== x) (x : replicate n x)
+(== x) x && all (== x) (replicate n x)
+True && True 
+True

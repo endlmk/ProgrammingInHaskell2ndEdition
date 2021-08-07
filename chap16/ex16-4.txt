@@ -1,0 +1,16 @@
+[] ++ [] = []
+
+(x:xs) ++ []
+x: (xs ++ [])
+x:xs
+
+[] ++ (ys ++ zs)
+ys ++ zs
+([] ++ ys) ++ zs
+
+
+(x:xs) ++ (ys ++ zs)
+x: (xs ++ (ys ++ zs))
+x: ((xs ++ ys) ++ zs)
+(x:(xs ++ ys) ++ zs)
+((x:xs) ++ ys) ++ zs

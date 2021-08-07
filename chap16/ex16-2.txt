@@ -1,0 +1,9 @@
+add Zero m
+m
+add m Zero
+
+add (Succ n) m
+Succ (add n m)
+Succ (add m n)
+add m (Succ n)
+
