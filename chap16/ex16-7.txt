@@ -1,0 +1,25 @@
+fmap (a -> b) -> Maybe a -> Maybe b
+fmap _ Nothing = Nothing
+fmap g (Just x) = Just (g x)
+
+fmap id Nothing 
+Nothing
+
+fmap id (Just x)
+Just (id x)
+Just x
+
+fmap (g . h) Nothing
+Nothing
+(fmap g . fmap h) Nothing 
+fmap g (fmap h Nothing)
+fmap g Nothing
+Nothing
+
+fmap (g . h) (Just x)
+Just (g . h x)
+Just (g (h x))
+fmap g . fmap h (Just x)
+fmap g (fmap h (Just x))
+fmap g (Just (h x))
+Just (g (h x))

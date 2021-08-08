@@ -1,0 +1,20 @@
+data Tree = Leaf Int | Node Tree Tree
+
+Leafs :: Tree -> Int
+Leafs (Leaf _) = 1
+Leafs (Node l r) = Leafs l + Leafs r
+
+Nodes :: Tree -> Int
+Nodes (Leaf _) = 0
+Nodes (Node l r) = Nodes l + Nodes r + 1
+
+Leafs (Leafs _)
+1
+Nodes (Leafs _) + 1
+
+Leafs t = Nodes t + 1
+
+Leafs (Node (Node l1 r1) r)
+Leafs (Node l1 r1) + Leafs r
+Nodes (Node l1 r1) + 1 + Nodes r + 1
+Nodes (Node (Node l1 r1) r) + 1

@@ -1,0 +1,68 @@
+pure :: a -> Maybe a
+pure = Just
+
+<*> :: Maybe (a -> b) -> Maybe a -> Maybe b
+Nothing <*> _ = Nothing
+(Just g) <*> mx = fmap g mx
+
+pure id <*> Nothing 
+Just id <*> Nothing
+fmap id Nothing
+id Nothing
+Nothing
+
+pure id <*> Just x 
+Just id <*> Just x
+fmap id Just x
+id (Just x)
+Just x
+
+
+pure (g x)
+Just (g x)
+fmap g (Just x)
+(Just g) <*> (Just x)
+pure g <*> pure x
+
+
+Nothing <*> pure y
+Nothing
+fmap (\g -> g y) Nothing
+pure (\g -> g y) <*> Nothing
+
+(Just x) <*> pure y
+fmap x (pure y)
+fmap x (Just y)
+Just (x y)
+Just ((\g -> g y) x)
+fmap (\g -> g y) (Just x)
+(Just (\g -> g y)) <*> (Just x)
+pure (\g -> g y) <*> (Just x)
+
+
+Nothing <*> (y <*> z)
+Nothing
+Nothing <*> z 
+(Nothing <*> y) <*> z
+((fmap Just (pure (.)) Nothing) <*> y) <*> z
+(pure (.) <*> Nothing <*> y) <*> z
+
+(Just x) <*> (y <*> z)
+fmap x (y <*> z)
+
+fmap x Nothing
+Nothing
+Nothing <*> z 
+(Nothing <*> y) <*> z
+((fmap Just (pure (.)) Nothing) <*> y) <*> z
+(pure (.) <*> Nothing <*> y) <*> z
+
+fmap x ((Just y') <*> z)
+fmap x (fmap y' z)
+fmap (x . y') z
+Just (x . y') <*> z
+fmap (. x) (Just y') <*> z
+(Just (. x) <*> y) <*> z
+((fmap . (Just x)) <*> y) <*> z
+(Just (.) <*> x <*> y) <*> z
+(pure (.) <*> x <*> y) <*> z

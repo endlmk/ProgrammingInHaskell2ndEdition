@@ -1,0 +1,34 @@
+data Tree a = Leaf a | Node (Tree a) (Tree a)
+
+instance Functor Tree where
+    -- fmap :: (a -> b) -> Tree a -> Tree b
+    fmap g (Leaf x) = Leaf (g x)
+    fmap g (Node l r) = Node (fmap g l) (fmap g r)
+
+fmap id (Leaf x)
+Leaf (id x)
+Leaf x
+
+fmap id t = t
+
+fmap id (Node l r)
+Node (fmap id l) (fmap id r)
+Node l r
+
+
+fmap (g . h) (Leaf x)
+Leaf (g . h x)
+Leaf (g (h x))
+fmap g (Leaf (h x))
+fmap g (fmap h (Leaf x))
+fmap g . fmap h (Leaf x)
+
+fmap (g . h) t = fmap g . fmap h t
+
+fmap (g . h) (Node l r)
+Node (fmap (g . h) l) (fmap (g . h) r)
+Node (fmap g . fmap h l) (fmap g . fmap h r)
+Node (fmap g (fmap h)) (fmap g (fmap h))
+fmap g (Node (fmap h l) (fmap h r))
+fmap g (fmap h (Node l r))
+fmap g . fmap h (Node l r)

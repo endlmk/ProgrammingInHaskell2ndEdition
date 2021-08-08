@@ -1,0 +1,35 @@
+(>>=) :: [a] -> (a -> [b]) -> [b]
+xs >>= f = [y | x <- xs, y <- f x]
+
+return x = [x]
+
+return x >>= f
+[x] >>= f
+[y | z <- [x], y <- f z]
+[y | y <- f x]
+f x
+
+xs >>= return 
+[y | x <- xs, y <- return x]
+[y | x <- xs, y <- [x]]
+[x | x <- xs]
+xs
+
+(xs >>= f) >>= g 
+
+[y | x <- [], y <- f x] >>= g
+[] >>= g
+[]
+[] >>= (\x -> (f x >>= g))
+
+(xs >>= f) >>= g = xs >>= (\x -> (f x >>= g))
+((x:xs) >>= f) >>= g
+([y | z <- (x:xs), y = f z]) >>= g
+[b | a <- [y | z <- (x:xs), y = f z], b <- g a]
+[b | a <- [y | z <- [x], y = f z], b <- g a] ++ [b | a <- [y | z <- xs, y = f z], b <- g a]
+[b | a <- [y | z <- [x], y = f z], b <- g a] ++ ((xs >>= f) >>= g)
+[b | b <- g (f x)] ++ xs >>= (\x -> (f x >>= g))
+[b | b <- g (f x)] ++ [y | z <- xs, y <- (\x -> f x >>= g) z]
+[b | a <- [x], b (\x -> f x >>= g) a] ++ [y | z <- xs, y <- (\x -> f x >>= g) z]
+[y | z <- (x:xs), y <- (\x -> f x >>= g) z]
+(x:xs) >>= (\x -> (f x >>= g))

@@ -1,0 +1,12 @@
+take 0 xs ++ drop 0 xs
+[] ++ xs
+xs
+
+take n [] ++ drop n []
+[] ++ []
+[]
+
+take (n + 1) (x:xs) ++ drop (n + 1) (x:xs)
+x : take n xs ++ drop n xs
+x : (take n xs ++ drop n xs)
+x:xs
